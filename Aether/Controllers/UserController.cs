@@ -31,9 +31,9 @@ namespace Aether.Controllers
 
                 return Ok(user);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return BadRequest(e.Message);
+                return BadRequest();
             }
         }
     }
