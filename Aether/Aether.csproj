@@ -43,6 +43,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.1\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -303,12 +309,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AdoptionsController.cs" />
     <Compile Include="Controllers\Context\DataBaseContext.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Adoption.cs" />
+    <Compile Include="Models\AdoptionQueue.cs" />
+    <Compile Include="Models\AdoptionStatus.cs" />
+    <Compile Include="Models\Animal.cs" />
+    <Compile Include="Models\AnimalAddress.cs" />
+    <Compile Include="Models\AnimalColor.cs" />
+    <Compile Include="Models\AnimalGender.cs" />
+    <Compile Include="Models\AnimalPhoto.cs" />
+    <Compile Include="Models\AnimalSize.cs" />
+    <Compile Include="Models\AnimalTemperament.cs" />
+    <Compile Include="Models\AnimalType.cs" />
+    <Compile Include="Models\AnimalVaccine.cs" />
+    <Compile Include="Models\City.cs" />
+    <Compile Include="Models\State.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\Vaccine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

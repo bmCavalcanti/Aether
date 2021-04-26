@@ -14,6 +14,7 @@ namespace Aether.Models
         [StringLength(150, ErrorMessage = "O nome deve ter no máximo {1} caracteres.")]
         public string Name { get; set; }
 
+        [ForeignKey("state_id")]
         [Required(ErrorMessage = "Estado obrigatório.")]
         public int StateId { get; set; }
     }

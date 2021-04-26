@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aether.Models
 {
+    [Table("animal_gender")]
     public class AnimalGender
     {
         [Key]

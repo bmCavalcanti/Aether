@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aether.Models
 {
+    [Table("animal_address")]
     public class AnimalAddress
     {
         [Key]
@@ -29,9 +30,11 @@ namespace Aether.Models
         [StringLength(100, ErrorMessage = "O complemento deve ter no máximo {1} caracteres.")]
         public string Complement { get; set; }
 
+        [ForeignKey("city_id")]
         [Required(ErrorMessage = "Cidade obrigatória.")]
         public int CityId { get; set; }
 
+        [ForeignKey("animal_id")]
         [Required(ErrorMessage = "Animal obrigatório.")]
         public int AnimalId { get; set; }
     }
