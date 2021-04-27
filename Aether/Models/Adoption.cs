@@ -32,5 +32,9 @@ namespace Aether.Models
         [ForeignKey("adoption_queue_id")]
         [Required(ErrorMessage = "Identificador da fila de adoção é obrigatório.")]
         public int AdoptionQueueId { get; set; }
+
+        public Animal Animal { get; set; }
+        public AdoptionStatus AdoptionStatus { get; set; }
+        public User User { get; set; }
     }
 }

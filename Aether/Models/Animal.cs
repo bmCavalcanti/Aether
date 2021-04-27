@@ -63,7 +63,5 @@ namespace Aether.Models
         [Column("animal_gender_id")]
         [Required(ErrorMessage = "Sexo do animal obrigatório.")]
         public int AnimalGenderId { get; set; }
-
-        public IList<Adoption> Adoptions { get; set; }
     }
 }

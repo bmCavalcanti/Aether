@@ -23,5 +23,8 @@ namespace Aether.Models
         [Column("user_id")]
         [Required(ErrorMessage = "Adotante obrigatório.")]
         public int UserId { get; set; }
+
+        public Animal Animal { get; set; }
+        public User User { get; set; }
     }
 }

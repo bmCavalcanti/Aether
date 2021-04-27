@@ -1,5 +1,6 @@
 ﻿using Aether.Controllers.Context;
 using Aether.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,10 @@ namespace Aether.Controllers
 {
     public class AdoptionQueuesController : ApiController
     {
+        private static string TYPE_BY_ID = "Id";
+        private static string TYPE_BY_ADOPTER = "Adopter";
+        private static string TYPE_BY_ANIMAL = "Animal";
+
         private readonly DataBaseContext context;
 
         public AdoptionQueuesController()
@@ -16,31 +21,52 @@ namespace Aether.Controllers
             context = new DataBaseContext();
         }
 
-        public IHttpActionResult Get(int Id)
+        [Route("api/AdoptionQueues/{type}/{id}")]
+        public IHttpActionResult Get(int Id, string type = "Id")
         {
             try
             {
-                AdoptionQueue adoptionQueue = context.AdoptionQueue.Find(Id);
-
-                if (adoptionQueue == null)
+                if (type == TYPE_BY_ID)
                 {
-                    return NotFound();
+                    AdoptionQueue adoptionQueue = context.AdoptionQueue
+                        .Include(a => a.Animal)
+                        .Include(a => a.User)
+                        .FirstOrDefault(a => a.Id == Id)
+                    ;
+
+                    if (adoptionQueue == null)
+                    {
+                        return NotFound();
+                    }
+
+                    return Ok(adoptionQueue);
                 }
+                else if (type == TYPE_BY_ADOPTER)
+                {
+                    IList<AdoptionQueue> list = context.AdoptionQueue
+                        .Include(a => a.Animal)
+                        .Include(a => a.User)
+                        .Where(a => a.UserId == Id)
+                        .ToList()
+                    ;
 
-                return Ok(adoptionQueue);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
+                    return Ok(list);
+                }
+                else if (type == TYPE_BY_ANIMAL)
+                {
+                    IList<AdoptionQueue> list = context.AdoptionQueue
+                        .Include(a => a.Animal)
+                        .Include(a => a.User)
+                        .Where(a => a.AnimalId == Id)
+                        .ToList()
+                    ;
 
-        public IHttpActionResult Get()
-        {
-            try
-            {
-                IList<AdoptionQueue> list = context.AdoptionQueue.ToList();
-                return Ok(list);
+                    return Ok(list);
+                }
+                else
+                {
+                    return BadRequest("Tipo inválido");
+                }
             }
             catch (Exception)
             {

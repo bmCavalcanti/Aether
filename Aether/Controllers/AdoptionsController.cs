@@ -1,5 +1,6 @@
 ﻿using Aether.Controllers.Context;
 using Aether.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,10 @@ namespace Aether.Controllers
 {
     public class AdoptionsController : ApiController
     {
+        private static string TYPE_BY_ID = "Id";
+        private static string TYPE_BY_ADOPTER = "Adopter";
+        private static string TYPE_BY_DONOR = "Donor";
+
         private readonly DataBaseContext context;
 
         public AdoptionsController()
@@ -16,31 +21,55 @@ namespace Aether.Controllers
             context = new DataBaseContext();
         }
 
-        public IHttpActionResult Get(int Id)
+        [Route("api/Adoptions/{type}/{id}")]
+        public IHttpActionResult Get(int Id, string type = "Id")
         {
             try
             {
-                Adoption adoption = context.Adoption.Find(Id);
-
-                if (adoption == null)
+                if (type == TYPE_BY_ID)
                 {
-                    return NotFound();
+                    Adoption adoption = context.Adoption
+                        .Include(a => a.Animal)
+                        .Include(a => a.AdoptionStatus)
+                        .Include(a => a.User)
+                        .FirstOrDefault(a => a.Id == Id)
+                    ;
+
+                    if (adoption == null)
+                    {
+                        return NotFound();
+                    }
+
+                    return Ok(adoption);
                 }
+                else if (type == TYPE_BY_ADOPTER)
+                {
+                    IList<Adoption> list = context.Adoption
+                        .Include(a => a.Animal)
+                        .Include(a => a.AdoptionStatus)
+                        .Include(a => a.User)
+                        .Where(a => a.UserId == Id)
+                        .ToList()
+                    ;
 
-                return Ok(adoption);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+                    return Ok(list);
+                }
+                else if (type == TYPE_BY_DONOR)
+                {
+                    IList<Adoption> list = context.Adoption
+                        .Include(a => a.Animal)
+                        .Include(a => a.AdoptionStatus)
+                        .Include(a => a.User)
+                        .Where(a => a.Animal.UserId == Id)
+                        .ToList()
+                    ;
 
-        public IHttpActionResult Get()
-        {
-            try
-            {
-                IList<Adoption> list = context.Adoption.ToList();
-                return Ok(list);
+                    return Ok(list);
+                }
+                else
+                {
+                    return BadRequest("Tipo inválido");
+                }
             }
             catch (Exception e)
             {
@@ -134,6 +163,17 @@ namespace Aether.Controllers
                 if (!queue.IsActive)
                 {
                     ModelState.AddModelError("adoption.AdoptionQueueId", "Essa fila de adoção foi cancelada.");
+                }
+
+                if (queue.AnimalId != adoption.AnimalId || queue.UserId != adoption.UserId)
+                {
+                    ModelState.AddModelError("adoption.AdoptionQueueId", "Fila inválida: Animal ou adotante não podem ser diferentes da fila.");
+                }
+
+                Adoption queueAdoption = context.Adoption.FirstOrDefault(a => a.AdoptionQueueId == queue.Id);
+                if (queueAdoption != null)
+                {
+                    ModelState.AddModelError("adoption.AdoptionQueueId", "Fila inválida: Essa fila já gerou uma adoção.");
                 }
 
                 IList<Adoption> animalAdoptions = context.Adoption.Where(a => a.AnimalId == adoption.AnimalId).ToList();
