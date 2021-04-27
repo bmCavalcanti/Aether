@@ -16,6 +16,7 @@ namespace Aether.Models
         public string Path { get; set; }
 
         [ForeignKey("animal_id")]
+        [Column("animal_id")]
         [Required(ErrorMessage = "Animal obrigatório.")]
         public int AnimalId { get; set; }
     }

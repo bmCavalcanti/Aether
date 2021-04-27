@@ -16,10 +16,12 @@ namespace Aether.Models
         public DateTime VaccineDate { get; set; }
 
         [ForeignKey("vaccine_id")]
+        [Column("vaccine_id")]
         [Required(ErrorMessage = "Vacina obrigatória.")]
         public int VaccineId { get; set; }
 
         [ForeignKey("animal_id")]
+        [Column("animal_id")]
         [Required(ErrorMessage = "Animal obrigatório.")]
         public int AnimalId { get; set; }
     }

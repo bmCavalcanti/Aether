@@ -15,6 +15,7 @@ namespace Aether.Models
         public string Name { get; set; }
 
         [ForeignKey("state_id")]
+        [Column("state_id")]
         [Required(ErrorMessage = "Estado obrigatório.")]
         public int StateId { get; set; }
     }

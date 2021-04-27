@@ -44,9 +44,9 @@ namespace Aether.Controllers
                 IList<Adoption> list = context.Adoption.ToList();
                 return Ok(list);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 

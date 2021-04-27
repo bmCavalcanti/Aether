@@ -7,6 +7,11 @@ namespace Aether.Models
     [Table("adoption_status")]
     public class AdoptionStatus
     {
+        public static int WAITING = 1;
+        public static int FINISHED = 2;
+        public static int CANCELED = 3;
+        public static int RETURNED = 4;
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

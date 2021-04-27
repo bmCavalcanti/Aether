@@ -31,10 +31,12 @@ namespace Aether.Models
         public string Complement { get; set; }
 
         [ForeignKey("city_id")]
+        [Column("city_id")]
         [Required(ErrorMessage = "Cidade obrigatória.")]
         public int CityId { get; set; }
 
         [ForeignKey("animal_id")]
+        [Column("animal_id")]
         [Required(ErrorMessage = "Animal obrigatório.")]
         public int AnimalId { get; set; }
     }

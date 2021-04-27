@@ -15,10 +15,12 @@ namespace Aether.Models
         public bool IsActive { get; set; }
 
         [ForeignKey("animal_id")]
+        [Column("animal_id")]
         [Required(ErrorMessage = "Animal obrigatório.")]
         public int AnimalId { get; set; }
 
         [ForeignKey("user_id")]
+        [Column("user_id")]
         [Required(ErrorMessage = "Adotante obrigatório.")]
         public int UserId { get; set; }
     }

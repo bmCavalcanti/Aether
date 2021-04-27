@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -34,27 +35,35 @@ namespace Aether.Models
         public DateTime CreatedAt { get; set; }
 
         [ForeignKey("user_id")]
+        [Column("user_id")]
         [Required(ErrorMessage = "Dono obrigatório.")]
         public int UserId { get; set; }
 
         [ForeignKey("animal_type_id")]
+        [Column("animal_type_id")]
         [Required(ErrorMessage = "Tipo obrigatório.")]
         public int AnimalTypeId { get; set; }
 
         [ForeignKey("animal_color_id")]
+        [Column("animal_color_id")]
         [Required(ErrorMessage = "Pelagem obrigatória.")]
         public int AnimalColorId { get; set; }
 
         [ForeignKey("animal_temperament_id")]
+        [Column("animal_temperament_id")]
         [Required(ErrorMessage = "Temperamento obrigatório.")]
         public int AnimalTemperamentId { get; set; }
 
         [ForeignKey("animal_size_id")]
+        [Column("animal_size_id")]
         [Required(ErrorMessage = "Tamanho obrigatório.")]
         public int AnimalSizeId { get; set; }
 
         [ForeignKey("animal_gender_id")]
+        [Column("animal_gender_id")]
         [Required(ErrorMessage = "Sexo do animal obrigatório.")]
         public int AnimalGenderId { get; set; }
+
+        public IList<Adoption> Adoptions { get; set; }
     }
 }
