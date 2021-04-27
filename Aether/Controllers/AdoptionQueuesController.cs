@@ -2,10 +2,7 @@
 using Aether.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 namespace Aether.Controllers
@@ -115,11 +112,21 @@ namespace Aether.Controllers
             }
         }
 
-
         private void ModelErrors(AdoptionQueue adoptionQueue)
         {
             try
             {
+                List<Adoption> userAdoptions = context.Adoption.Where(a =>
+                    a.UserId == adoptionQueue.UserId &&
+                    a.AdoptionStatusId == AdoptionStatus.RETURNED &&
+                    a.CreatedAt <= DateTime.Today.AddMonths(1)
+                ).ToList();
+
+                if (userAdoptions.Count > 0)
+                {
+                    ModelState.AddModelError("adoptionQueue.UserId", "Usuários que devolveram animais devem aguardar um mês antes de iniciar uma nova adoção.");
+                }
+
                 IList<Adoption> adoptions = context.Adoption.Where(a => a.AnimalId == adoptionQueue.AnimalId).ToList();
                 if (adoptions != null)
                 {

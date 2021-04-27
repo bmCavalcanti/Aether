@@ -3,8 +3,6 @@ using Aether.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 namespace Aether.Controllers
@@ -66,9 +64,9 @@ namespace Aether.Controllers
                 string location = Url.Link("DefaultApi", new { controller = "adoptions", id = adoption.Id });
                 return Created(new Uri(location), adoption);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
@@ -88,11 +86,16 @@ namespace Aether.Controllers
                     return NotFound();
                 }
 
-                ModelErrors(adoption);
-
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
+                }
+
+                if (adoption.AdoptionStatusId == AdoptionStatus.CANCELED || adoption.AdoptionStatusId == AdoptionStatus.RETURNED)
+                {
+                    AdoptionQueue queue = context.AdoptionQueue.Find(adoption.AdoptionQueueId);
+                    queue.IsActive = false;
+                    context.AdoptionQueue.Update(queue);
                 }
 
                 adoptionOld.AdoptionStatusId = adoption.AdoptionStatusId;
@@ -101,25 +104,52 @@ namespace Aether.Controllers
                 context.SaveChanges();
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
-
 
         private void ModelErrors(Adoption adoption)
         {
             try
             {
-                //if (scheduling.SchedulingTypeId.Equals(SchedulingType.TECHNICAL_ASSISTANCE) && scheduling.ServiceId == null)
-                //{
-                //    ModelState.AddModelError("scheduling.ServiceId", "Agendamentos do tipo '1 - ASSISTÊNCIA TÉCNICA' devem possuir um serviço.");
-                //}
+                List<Adoption> userAdoptions = context.Adoption.Where(a =>
+                    a.UserId == adoption.UserId &&
+                    a.AdoptionStatusId == AdoptionStatus.RETURNED &&
+                    a.CreatedAt <= DateTime.Today.AddMonths(1)
+                ).ToList();
+
+                if (userAdoptions.Count > 0)
+                {
+                    ModelState.AddModelError("adoption.UserId", "Usuários que devolveram animais devem aguardar um mês antes de iniciar uma nova adoção.");
+                }
+
+                AdoptionQueue queue = context.AdoptionQueue.Find(adoption.AdoptionQueueId);
+                if (queue == null)
+                {
+                    ModelState.AddModelError("adoption.AdoptionQueueId", "Fila de adoção não enontrada. É necessário estar numa fila para iniciar uma adoção.");
+                }
+
+                if (!queue.IsActive)
+                {
+                    ModelState.AddModelError("adoption.AdoptionQueueId", "Essa fila de adoção foi cancelada.");
+                }
+
+                IList<Adoption> animalAdoptions = context.Adoption.Where(a => a.AnimalId == adoption.AnimalId).ToList();
+                if (animalAdoptions.Any(a => a.AdoptionStatusId == AdoptionStatus.FINISHED || a.AdoptionStatusId == AdoptionStatus.WAITING))
+                {
+                    ModelState.AddModelError("adoption.AnimalId", "Esse animal já foi adotado ou está em processo de adoção.");
+                }
+
+                if (adoption.CreatedAt == null)
+                {
+                    ModelState.AddModelError("adoption.CreatedAt", "Data da criação obrigatória.");
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                ModelState.AddModelError("Message", "Erro interno.");
+                ModelState.AddModelError("Message", e.Message);
             }
         }
     }
